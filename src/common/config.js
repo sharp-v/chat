@@ -1,21 +1,22 @@
 /**
  * 公共常量
-  */
+ * 我现在觉得这写的不好,我又想改了... 再说吧
+ */
 
 //单位毫秒,保存没有发送websocket心跳的用户登录状态2分钟
 const USER_DATA_CACHE_TIME = 10 * 1000
 // token有效期 单位ms
 const TOKEN_VALIDITY_PERIOD = 1000 * 60 * 60 * 24
 
-// server
-const IP = "119.23.54.17"
-const PORT = '8080'
+// server 这是我服务器的地址
+// const IP = "119.23.54.17"
+// const PORT = '8080'
 
-// local
-// const IP = '127.0.0.1'
-// const PORT = '9000'
+// local 本地服务器地址2
+const IP = '127.0.0.1'
+const PORT = '9000'
 
-// local network
+// local network 本地服务器地址2
 // const IP = '192.168.1.101'
 // const PORT = '9000'
 
