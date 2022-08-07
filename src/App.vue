@@ -1,26 +1,34 @@
 <template>
-  <img alt="Vue logo" src="./assets/logo.png">
-  <HelloWorld msg="Welcome to Your Vue.js App"/>
+  <router-view v-slot="{ Component, route }">
+    <!-- <transition name="van-slide-right"> -->
+    <keep-alive include="message,relation,space">
+      <component
+        :is="Component"
+        :key="route.meta.usePathKey ? route.path : undefined"
+      />
+    </keep-alive>
+    <!-- </transition> -->
+  </router-view>
+  <tabbar v-if="$route.meta.main"></tabbar>
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import { mapActions } from "vuex";
+
+import Tabbar from "./components/Tabbar.vue";
 
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    HelloWorld
-  }
-}
+    Tabbar,
+  },
+  methods: {
+    ...mapActions(["initRelation"]),
+  },
+  mounted() {},
+};
 </script>
 
 <style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+@import url("./common/common.css");
 </style>
