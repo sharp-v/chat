@@ -29,7 +29,8 @@ npm run build
 ```sh
 # 切换到对应目录
 cd chat-backend
-
+# 安装后端依赖
+npm install
 # 配置数据库ORM sequelize-cli
 # 编辑 ./config/config.json 配置数据库用户，密码，数据库种类(方言 dialect) 等等 详细看sequelize官方文档
 # 运行 ./config/db.sh 改文件用于创建数据库，表，以及生成种子，创建表暂时没有写完，初次创建的时候没有写到db.sh里面，我后续会补上
