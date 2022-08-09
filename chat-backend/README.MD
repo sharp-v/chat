@@ -9,12 +9,19 @@
 5. 动态
 
 # Introduce
+
 ./chat-project-files 为项目文档，说明了项目后端的部分设计思路
+
 ./config/config.json sequelize 的配置文件
+
 ./config/db.sh 用sequelize-cli配置数据库、表以及生成数据种子
+
 ./migrations 和 ./models 相当于DDL 在这里配置DDL 具体看sequelize官方文档吧 我是个半调子
+
 ./seeders 数据种子
+
 ./src 后端文件
+
 ./static 静态资源文件夹，也即前端打包的输出文件夹
 
 后端需要配置好数据库，该步骤较麻烦，我也忘得差不多了。。
