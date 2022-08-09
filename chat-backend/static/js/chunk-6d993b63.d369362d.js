@@ -1,0 +1,2 @@
+(window["webpackJsonp"]=window["webpackJsonp"]||[]).push([["chunk-6d993b63"],{"7e89":function(e,n,c){e.exports=c.p+"img/empty-image.0bc9958e.png"},"834b":function(e,n,c){"use strict";c.r(n);var a=c("7a23"),t={class:"space"};function i(e,n,i,o,p,r){var s=Object(a["J"])("van-empty");return Object(a["C"])(),Object(a["i"])("div",t,[Object(a["m"])(s,{image:c("7e89"),description:"待开发"},null,8,["image"])])}var o={name:"space",beforeCreate:function(){console.log("space create")}};o.render=i;n["default"]=o}}]);
+//# sourceMappingURL=chunk-6d993b63.d369362d.js.map
