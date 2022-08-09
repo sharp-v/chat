@@ -1,16 +1,34 @@
-# 需求说明
+# 基本功能期望
 
-简单的chat及时聊天小程序
+简单的聊天应用
 要求:
-及时收发(一旦登录就发送)
-一对一实时收发,多对多实时收发
-可配置接收
-可管理群组
-消息可撤回
-动态管理,评论留言
+1. 实时性
+2. 好友消息，群组消息
+3. 消息管理
+4. 消息撤回
+5. 动态
+
+# Introduce
+./chat-project-files 为项目文档，说明了项目后端的部分设计思路
+./config/config.json sequelize 的配置文件
+./config/db.sh 用sequelize-cli配置数据库、表以及生成数据种子
+./migrations 和 ./models 相当于DDL 在这里配置DDL 具体看sequelize官方文档吧 我是个半调子
+./seeders 数据种子
+./src 后端文件
+./static 静态资源文件夹，也即前端打包的输出文件夹
+
+后端需要配置好数据库，该步骤较麻烦，我也忘得差不多了。。
+
+```sh
+# npm 运行项目
+npm run dev
+# pm2 运行项目
+pm2 start ./src/app.js
+```
 
 
-# 总体设计
+## other
+### 总体设计
 
 后端依赖:nodejs,express,express-ws,mysql2,sequelize,+生成token的一个加密算法
 前端依赖:vue3,vant3,axios,(Fetch),websocket,+一些静态的资源库(矢量图库,图片库)
@@ -22,7 +40,7 @@
 接收客户端websocket心跳消息,检索用户消息列表,转发客户端消息,用户配置管理接口
 期间需要存储这些数据到redis中，因为redis是将数据存在内存中的
 
-# 详细设计
+### 详细设计
 
 后端部分：
 redis只存两分钟的在线用户数据，用户也只能在两分钟内撤回数据
@@ -32,7 +50,7 @@ redis只存两分钟的在线用户数据，用户也只能在两分钟内撤回
 
 
 
-# 核心问题
+### 核心问题
 
 websocket心跳设置
 心跳间隔不宜过长，过长没有实时性
