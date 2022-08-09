@@ -8,7 +8,7 @@ const USER_DATA_CACHE_TIME = 10 * 1000
 // token有效期 单位ms
 const TOKEN_VALIDITY_PERIOD = 1000 * 60 * 60 * 24
 
-// server 这是我服务器的地址
+// server 这是阿里云服务器的地址
 // const IP = "119.23.54.17"
 // const PORT = '8080'
 
