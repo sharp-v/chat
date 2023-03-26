@@ -36,12 +36,11 @@ chat.ws('/chat', (ws, req) => {
         });
         ws.on('message', (data) => {
             data = JSON.parse(data);
-            console.log(data);
-            verToken(data.token, req).then((verifyResult) => {
-                if (verifyResult.success) {
-                    const user = verifyResult.user;
-                    // user.data = data
-                    switch (data.type) {
+            const { token, type } = JSON.parse(data);
+            verToken(token, req).then((verifyResult) => {
+                const { success, user } = verifyResult;
+                if (success) {
+                    switch (type) {
                         case WS_TYPE.FIRST_CONNECT:
                             fisrtConnect(user, ws);
                             break;
@@ -155,17 +154,6 @@ function receiveMessage(userId, messages) {
                     MESSAGE.setMessageState(item.id, item.state);
                 } else {
                     storeArr.push(item);
-                    console.log(
-                        'push',
-                        'id',
-                        item.id,
-                        'state',
-                        item.state,
-                        'messageId',
-                        item.messageId,
-                        'main.id',
-                        item.main.id,
-                    );
                 }
             });
             redis.set('msuid' + userId, JSON.stringify(storeArr));
