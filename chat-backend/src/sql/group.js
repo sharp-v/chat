@@ -1,57 +1,46 @@
-const Model = require('./model')
-const { Op } = require('sequelize')
+const Model = require('./model');
+const { Op } = require('sequelize');
 
 async function queryGroupOwn(groupId) {
-  try {
     let result = await Model.Group.findOne({
-      where: {
-        id: groupId
-      }
-    })
-    result = result ? result.dataValues : null
-  } catch (err) {
-    throw err
-  }
+        where: {
+            id: groupId,
+        },
+    });
+    return result ? result.dataValues : null;
 }
 
 async function queryGroupById(groupId) {
-  try {
     let result = await Model.Group.findOne({
-      where: {
-        id: groupId
-      }
-    })
-    return result ? result.dataValues : null
-  } catch (err) {
-    throw err
-  }
+        where: {
+            id: groupId,
+        },
+    });
+    return result ? result.dataValues : null;
 }
 
 async function queryGroupByKeyWord(keyWord) {
-  try {
     let result = await Model.Group.findAll({
-      where: {
-        [Op.or]: [
-          {
-            id: {
-              [Op.like]: keyWord
-            }
-          }, {
-            name: {
-              [Op.like]: keyWord
-            }
-          }
-        ]
-      }
-    })
-    return result ? result.map(item => item.dataValues) : []
-  } catch (err) {
-    throw err
-  }
+        where: {
+            [Op.or]: [
+                {
+                    id: {
+                        [Op.like]: keyWord,
+                    },
+                },
+                {
+                    name: {
+                        [Op.like]: keyWord,
+                    },
+                },
+            ],
+        },
+    });
+    return result ? result.map((item) => item.dataValues) : [];
 }
 
 module.exports = {
-  queryGroupOwn,
-  queryGroupById,
-  queryGroupByKeyWord,
-}
+    queryGroupOwn,
+    queryGroupById,
+    queryGroupByKeyWord,
+};

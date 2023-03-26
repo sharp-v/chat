@@ -1,0 +1,11 @@
+# Ignore chat-backend
+chat-backend/static
+chat-backend/node_modules
+chat-backend/chat-project-files
+
+node_modules
+public
+
+# Ignore all HTML files:
+*.HTML
+*.md

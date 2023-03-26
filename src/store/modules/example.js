@@ -1,18 +1,15 @@
 const example = {
-  state: () => ({
-  }),
-  getters: {
+    state: () => ({}),
+    getters: {},
+    mutations: {
+        // fn(state, payload) {
+        // }
+    },
+    actions: {
+        // init({ commit }) {
+        //   // async things
+        // }
+    },
+};
 
-  },
-  mutations: {
-    // fn(state, payload) {
-    // }
-  },
-  actions: {
-    // init({ commit }) {
-    //   // async things 
-    // }
-  }
-}
-
-export default example
+export default example;

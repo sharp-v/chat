@@ -1,8 +1,8 @@
-const express = require('express')
-const router = express.Router()
+const express = require('express');
+const router = express.Router();
 
-router.use('/add', require('./add'))
-router.use('/confirm-add', require('./confirm-add'))
-router.use('/update', require('./update'))
+router.use('/add', require('./add'));
+router.use('/confirm-add', require('./confirm-add'));
+router.use('/update', require('./update'));
 
-module.exports = router
+module.exports = router;

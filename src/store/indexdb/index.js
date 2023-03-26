@@ -1,2 +1,2 @@
-import localforage from "localforage";
-localforage
+import localforage from 'localforage';
+localforage;
