@@ -16,5 +16,6 @@
     "htmlWhitespaceSensitivity": "ignore",
     "vueIndentScriptAndStyle": false,
     "endOfLine": "lf",
-    "embeddedLanguageFormatting": "auto"
+    "embeddedLanguageFormatting": "auto",
+    "parser": "babel"
 }
