@@ -9,35 +9,34 @@
             <slot v-if="!dataValue"></slot>
             <div v-else>{{ dataValue }}</div>
         </div>
-    </div>
-    <!-- panel -->
-    <div class="panel" ref="panel">
-        <!-- panel subscript -->
-        <div class="panel-subscript" ref="subscript"></div>
-        <div class="panel-items-wrapper" ref="panelItemWrapper">
-            \
-            <!-- panel item -->
-            <div
-                class="panel-item"
-                v-for="(item, index) in panels"
-                :key="index"
-                @click="
-                    item.onClick(
-                        $event,
-                        configPaneVisiable,
-                        onCopy,
-                        item,
-                        index,
-                    )
-                "
-            >
-                <!-- v-if='item.availableTypes.get(dataValue)' -->
-                <a :href="item.url" class="panel-item-container">
-                    <i class="aidicon" ref="aidicons"></i>
-                    <div class="item name">
-                        {{ item.name }}
-                    </div>
-                </a>
+        <!-- panel -->
+        <div class="panel" ref="panel">
+            <!-- panel subscript -->
+            <div class="panel-subscript" ref="subscript"></div>
+            <div class="panel-items-wrapper" ref="panelItemsWrapper">
+                <!-- panel item -->
+                <div
+                    class="panel-item"
+                    v-for="(item, index) in panels"
+                    :key="index"
+                    @click="
+                        item.onClick(
+                            $event,
+                            configPaneVisiable,
+                            onCopy,
+                            item,
+                            index,
+                        )
+                    "
+                >
+                    <!-- v-if='item.availableTypes.get(dataValue)' -->
+                    <a :href="item.url" class="panel-item-container">
+                        <i class="aidicon" ref="aidicons"></i>
+                        <div class="item name">
+                            {{ item.name }}
+                        </div>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -143,6 +142,10 @@ export default {
     beforeMount() {
         // 配置捷径面板
         this.configPanel();
+        window.addEventListener('click', (event) => this.autoTrigger(event));
+    },
+    beforeUnmount() {
+        window.removeEventListener('click', (event) => this.autoTrigger(event));
     },
     mounted() {
         this.setShortCutLabelStyle();
@@ -150,13 +153,18 @@ export default {
     },
     updated() {
         this.setShortCutLabelStyle();
-        this.setpanelPosition();
+        this.setPanelPosition();
     },
     methods: {
+        autoTrigger(event) {
+            if (event.target.className !== 'short-cut-label-content') {
+                this.configPanelVisiable(false);
+            }
+        },
         onTouchStart() {
             clearTimeout(this.loop);
             this.loop = setTimeout(() => {
-                this.setpanelPosition();
+                this.setPanelPosition();
                 this.configPanelVisiable(true);
             }, this.$props.triggerPanelTime);
         },
@@ -166,7 +174,7 @@ export default {
         onCopy(callback) {
             const copyText = this.dataValue
                 ? this.dataValue
-                : this.$refs.content.$el.innerText;
+                : this.$refs.content.innerText;
             navigator.clipboard
                 .writeText(copyText)
                 .then(() => true)
@@ -177,18 +185,17 @@ export default {
                 .finally(() => callback && callback());
         },
         configPanelVisiable(visiable = false) {
-            const panelEl = this.$refs.panel.$el;
+            const panelEl = this.$refs.panel;
             if (visiable) {
-                panelEl.style.visiable = 'initial';
+                panelEl.style.visibility = 'initial';
                 panelEl.style.opacity = 1;
             } else {
-                panelEl.style.visiable = 'hidden';
+                panelEl.style.visibility = 'hidden';
                 panelEl.style.opacity = 0;
             }
         },
         // 配置panel的项目
         configPanel() {
-            // const defaultPanels = new Set(['copy']);
             // panelsMap为原panel的<id, item>映射关系
             const panelsMap = this.panels.reduce(
                 (pre, item) => pre.set(item.id, item),
@@ -197,7 +204,7 @@ export default {
             // 最终panel 如果不自定义，则使用默认的或者直接添加配置数组
             const panels = !this.$props.isCustomizePanel ? this.panels : [];
             // 逐一配置
-            this.$props.panelList.array.forEach((propItem, index) => {
+            this.$props.panelList.forEach((propItem) => {
                 this.configPanelItem(panels, panelsMap, propItem);
             });
             this.panels = panels;
@@ -276,6 +283,11 @@ export default {
             }
             panels.push(panelItem);
         },
+        /**
+         * 对panel内容是否显示进行设置,并对其输入参数进行类型检查
+         * @param {Object} panelItem 面板子项
+         * @param {Object} propItem 面板prop子项
+         */
         setAvailableType(panelItem, propItem) {
             let configAvailableTypes = new Map();
             switch (true) {
@@ -311,16 +323,223 @@ export default {
                 default:
                     throw TEXT;
             }
+            panelItem.avaliableTypes = configAvailableTypes;
         },
+        /**
+         * 验证avilableTypes 子项key value
+         */
         varifyAvailableType(key, value) {
             if (typeof key !== 'string') throw TEXT;
             if (typeof value !== 'boolean') throw TEXT;
         },
+        // 设置捷径样式
         setShortCutLabelStyle() {
-            //
+            // 设置panelWrapper样式
+            // const panelItemsWrapper = this.$refs.panelItemsWrapper;
+            const panelItemsWrapperEl = this.$refs.panelItemsWrapper;
+            const panelStyle = this.$props.panelStyle;
+            this.setDomStyle(panelItemsWrapperEl, panelStyle);
+
+            // 设置角标样式
+            const subscriptEl = this.$refs.subscript;
+            this.setDomStyle(subscriptEl, this.$props.subScriptStyle);
+
+            const panelItemRefs = this.$refs.panelItemsWrapper.children;
+            const panelItemStyle = this.$props.panelItemStyle;
+            panelItemRefs.forEach((item, index) => {
+                this.setDomStyle(item, panelItemStyle);
+                const selfStyle = this.panels[index]?.style;
+                this.setDomStyle(item, selfStyle);
+            });
+
+            this.setPanelIcon();
+
+            const contentEl = this.$refs.content;
+            const contentStyle = this.$props.contentStyle;
+            this.setDomStyle(contentEl, contentStyle);
+        },
+
+        setDomStyle($el, styleObj = {}) {
+            if (
+                typeof styleObj !== 'object' ||
+                JSON.stringify(styleObj) === '{}'
+            )
+                return;
+            styleObj = this.getHumpStyleObjKey(styleObj);
+            Object.entries(styleObj).forEach((item) => {
+                const [key, value] = item;
+                $el.style[key] = value;
+            });
+        },
+
+        getHumpStyleObjKey(styleObj) {
+            const toHump = (name) =>
+                name.replace(/-[z-z]/g, (res) => res[1].toUpperCase());
+            return Object.entries(styleObj).reduce((ret, item) => {
+                const [key, value] = item;
+                ret[toHump(key)] = value;
+                return ret;
+            }, {});
+        },
+        setPanelIcon() {
+            const { aidicons } = this.$refs;
+            if (aidicons) {
+                const len = aidicons.length;
+                this.panels.forEach((item, index) => {
+                    if (index < len) {
+                        this.$refs.aidicons[index].className += ' ' + item.icon;
+                    }
+                });
+            }
+        },
+        setPanelPosition() {
+            const panelEl = this.$refs.panel;
+            const subscriptEl = this.$refs.subscript;
+            const contentEl = this.$refs.content;
+            this.setPanelVerticalPos(panelEl, subscriptEl, contentEl);
+            this.setPanelHorizontalPos(panelEl, subscriptEl, contentEl);
+        },
+        setPanelVerticalPos(panelEl, subscriptEl, contentEl) {
+            const contentDR = contentEl.getBoundingClientRect();
+            const panelDR = panelEl.getBoundingClientRect();
+            // const subscriptDR = subscriptEl.getBoundingClientRect();
+
+            const panelPosCorrect = -12;
+            if (contentDR.top > 2 * panelDR.height) {
+                panelEl.style.top = `${-panelDR.height + panelPosCorrect}px`;
+                panelEl.style.bottom = 'initial';
+
+                subscriptEl.style.top = 'initial';
+                subscriptEl.style.bottom = '-5px';
+            } else {
+                panelEl.style.top = 'initial';
+            }
+        },
+        setPanelHorizontalPos(panelEl, subscriptEl, contentEl) {
+            const contentDR = contentEl.getBoundingClientRect();
+            const panelDR = panelEl.getBoundingClientRect();
+            // const subscriptDR = subscriptEl.getBoundingClientRect();
+            const subPosCorrect = -11;
+            const expectPanelLeft = (contentDR - panelDR.width) / 2;
+            panelEl.style.left = `${expectPanelLeft}px`;
+            subscriptEl.style.left = `${panelDR.width / 2 + subPosCorrect}px`;
+            if (contentDR.left + contentDR.width / 2 < contentDR.width / 2) {
+                const minLeft = 0;
+                panelEl.style.left = `${-contentDR.left}px`;
+                const panelDR_changed = panelEl.getBoundingClientRect();
+                subscriptEl.style.left =
+                    panelDR_changed.left > minLeft
+                        ? `${panelDR.width / 2 + subPosCorrect}px`
+                        : `${
+                              contentDR.left +
+                              contentDR.width / 2 +
+                              subPosCorrect
+                          }px`;
+            }
+            if (
+                this.screenWidth - contentDR.right + contentDR.width / 2 <
+                contentDR.width / 2
+            ) {
+                const minRight = 0;
+                panelEl.style.left = `${-(
+                    panelDR.width -
+                    (this.screenWidth - contentDR.left)
+                )}px`;
+                const panelDR_changed = panelEl.getBoundingClientRect();
+                subscriptEl.style.left =
+                    this.screenWidth - panelDR_changed.right > minRight
+                        ? `${panelDR.width / 2 + subPosCorrect}px`
+                        : `${
+                              contentDR.left +
+                              contentDR.width / 2 -
+                              panelDR_changed.left +
+                              subPosCorrect
+                          }px`;
+            }
         },
     },
 };
 </script>
 
-<style></style>
+<style lang='less'>
+a.panel-item-container,
+a.panel-item-container:hover,
+a.panel-item-container:focus,
+a.panel-item-container:active {
+    text-decoration: none;
+    background: inherit;
+    color: inherit;
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.short-cut-label {
+    display: inline-block;
+    position: relative;
+    z-index: 99;
+}
+
+.short-cut-label-content {
+    display: inline-block;
+    position: relative;
+    z-index: 0;
+}
+.panel {
+    visibility: hidden;
+    font-size: 12px;
+    display: flex;
+    transition: 0.3s;
+    opacity: 0;
+    position: absolute;
+    z-index: 1;
+
+    font-size: 16px;
+
+    margin: 15rpx auto;
+    .panel-subscript,
+    .panel-items-wrapper {
+        background: #4c4c4c;
+        color: #eee;
+    }
+
+    .panel-subscript {
+        display: block;
+        width: 20px;
+        height: 20px;
+        transform: rotate(45deg);
+        position: absolute;
+        z-index: 0;
+    }
+    .panel-items-wrapper {
+        display: flex;
+        font: inherit;
+        max-width: 70vw;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+        .panel-item {
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            text-align: center;
+            font-size: inherit;
+            padding: 16rpx 8rpx;
+            position: relative;
+            min-width: 2em;
+            &:first-child {
+                padding-left: 20rpx;
+            }
+            i {
+                margin: 0;
+                color: inherit;
+            }
+            .item-name {
+                font-size: inherit;
+                white-space: nowrap;
+            }
+        }
+    }
+}
+</style>
