@@ -127,25 +127,25 @@ export default {
                     icon: 'copy',
                     avaliableTypes: new Map([['TEXT', true]]),
                     onClick: ($event, callback) => this.onCopy(callback),
-                },
+                }
             ],
         };
     },
     watch: {
         // 控制panel显影
-        showPanelConfig: {
-            handle(val) {
-                this.configPanelVisiable(val);
-            },
-        },
+        // showPanelConfig: {
+        //     handle(val) {
+        //         this.configPanelVisiable(val);
+        //     },
+        // },
     },
     beforeMount() {
         // 配置捷径面板
         this.configPanel();
-        window.addEventListener('click', (event) => this.autoTrigger(event));
+        window.document.body.addEventListener('click', (event) => this.autoTrigger(event));
     },
     beforeUnmount() {
-        window.removeEventListener('click', (event) => this.autoTrigger(event));
+        window.document.body.removeEventListener('click', (event) => this.autoTrigger(event));
     },
     mounted() {
         this.setShortCutLabelStyle();
@@ -161,14 +161,14 @@ export default {
                 this.configPanelVisiable(false);
             }
         },
-        onTouchStart() {
+        onTouchStart($event) {
             clearTimeout(this.loop);
             this.loop = setTimeout(() => {
                 this.setPanelPosition();
                 this.configPanelVisiable(true);
             }, this.$props.triggerPanelTime);
         },
-        onTouchEnd() {
+        onTouchEnd($event) {
             clearTimeout(this.loop);
         },
         onCopy(callback) {
@@ -404,7 +404,7 @@ export default {
             const panelDR = panelEl.getBoundingClientRect();
             // const subscriptDR = subscriptEl.getBoundingClientRect();
 
-            const panelPosCorrect = -12;
+            const panelPosCorrect = -16;
             if (contentDR.top > 2 * panelDR.height) {
                 panelEl.style.top = `${-panelDR.height + panelPosCorrect}px`;
                 panelEl.style.bottom = 'initial';
@@ -413,6 +413,10 @@ export default {
                 subscriptEl.style.bottom = '-5px';
             } else {
                 panelEl.style.top = 'initial';
+                panelEl.style.bottom = 'initial';
+
+                subscriptEl.style.top = '-5px';
+                subscriptEl.style.bottom = 'initial';
             }
         },
         setPanelHorizontalPos(panelEl, subscriptEl, contentEl) {
@@ -420,10 +424,15 @@ export default {
             const panelDR = panelEl.getBoundingClientRect();
             // const subscriptDR = subscriptEl.getBoundingClientRect();
             const subPosCorrect = -11;
-            const expectPanelLeft = (contentDR - panelDR.width) / 2;
+            // --------------------------------------------------------------------
+            // 默认期望位置为: 与文本保持相对居中情况
+            // 但文本可能恰好位于屏幕最左或者最右, 此时捷径面板根据情况左右对齐
+            // --------------------------------------------------------------------
+            const expectPanelLeft = (contentDR.width - panelDR.width) / 2;
             panelEl.style.left = `${expectPanelLeft}px`;
             subscriptEl.style.left = `${panelDR.width / 2 + subPosCorrect}px`;
-            if (contentDR.left + contentDR.width / 2 < contentDR.width / 2) {
+            // 与文本左对齐情况
+            if (contentDR.left + contentDR.width / 2 < panelDR.width / 2) {
                 const minLeft = 0;
                 panelEl.style.left = `${-contentDR.left}px`;
                 const panelDR_changed = panelEl.getBoundingClientRect();
@@ -436,9 +445,10 @@ export default {
                               subPosCorrect
                           }px`;
             }
+            // 与文本右对齐情况
             if (
                 this.screenWidth - contentDR.right + contentDR.width / 2 <
-                contentDR.width / 2
+                panelDR.width / 2
             ) {
                 const minRight = 0;
                 panelEl.style.left = `${-(
@@ -494,9 +504,7 @@ a.panel-item-container:active {
     position: absolute;
     z-index: 1;
 
-    font-size: 16px;
-
-    margin: 15rpx auto;
+    margin: 8px auto;
     .panel-subscript,
     .panel-items-wrapper {
         background: #4c4c4c;
@@ -525,11 +533,14 @@ a.panel-item-container:active {
             align-items: center;
             text-align: center;
             font-size: inherit;
-            padding: 16rpx 8rpx;
+            padding: 8px 4px;
             position: relative;
             min-width: 2em;
             &:first-child {
-                padding-left: 20rpx;
+                padding-left: 10px;
+            }
+            &:last-child {
+                padding-right: 10px;
             }
             i {
                 margin: 0;
